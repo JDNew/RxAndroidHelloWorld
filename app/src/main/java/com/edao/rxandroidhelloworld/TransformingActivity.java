@@ -17,6 +17,7 @@ import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
+import io.reactivex.observables.GroupedObservable;
 
 /**
  * description
@@ -26,13 +27,77 @@ import io.reactivex.functions.Function;
 
 public class TransformingActivity extends AppCompatActivity {
     private final String TAG = "RxAndroid";
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transform);
 
 //        map();
-        flatMap();
+//        flatMap();
+        groupBy();
+    }
+
+    private void groupBy() {
+        List<Student> students = new ArrayList<>();
+        students.add(new Student("张三", 12));
+        students.add(new Student("李四", 16));
+        students.add(new Student("王五", 15));
+
+        Observable.fromIterable(students).groupBy(new Function<Student, Integer>() {
+            @Override
+            public Integer apply(@NonNull Student student) throws Exception {
+                //根据条件设定返回的不同的分组（这里是年龄大于15岁的分到组号为1，其余的组号为2）
+                if(student.age > 15){
+                    return 1;
+                }else {
+                    return 2;
+                }
+
+            }
+        }).subscribe(new Observer<GroupedObservable<Integer, Student>>() {
+            @Override
+            public void onSubscribe(@NonNull Disposable disposable) {
+
+            }
+
+            //GroupedObservable里包含了多个Observable，根据运行结果在这里就是两个（1和2）
+            @Override
+            public void onNext(@NonNull final GroupedObservable<Integer, Student> integerStudentGroupedObservable) {
+                integerStudentGroupedObservable.subscribe(new Observer<Student>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable disposable) {
+
+                    }
+
+                    @Override
+                    public void onNext(@NonNull Student student) {
+
+                        Log.d(TAG, "组号为 "+ integerStudentGroupedObservable.getKey() + " 的成员有 " + student.name);
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable throwable) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onError(@NonNull Throwable throwable) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
     }
 
     private void flatMap() {
@@ -48,9 +113,9 @@ public class TransformingActivity extends AppCompatActivity {
         lessons1.add(new Lesson("美术"));
 
         List<Student> students = new ArrayList<>();
-        students.add(new Student("张三" , 12 , lessons1));
-        students.add(new Student("李四" , 16 , lessons2));
-        students.add(new Student("王五" , 10 , lessons3));
+        students.add(new Student("张三", 12, lessons1));
+        students.add(new Student("李四", 16, lessons2));
+        students.add(new Student("王五", 10, lessons3));
 
         Observable.fromIterable(students).flatMap(new Function<Student, ObservableSource<Lesson>>() {
             @Override
