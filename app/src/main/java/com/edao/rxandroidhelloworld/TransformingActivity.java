@@ -16,6 +16,7 @@ import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Function;
 import io.reactivex.observables.GroupedObservable;
 
@@ -36,7 +37,39 @@ public class TransformingActivity extends AppCompatActivity {
 //        map();
 //        flatMap();
 //        groupBy();
-        buffer();
+//        buffer();
+        scan();
+    }
+
+    private void scan() {
+        Observable.just(1 , 2 , 3 , 4 , 5).scan(new BiFunction<Integer, Integer, Integer>() {
+
+            //表现形式上是一个累加的效果。即把上一个函数的结果作为下一个函数的初始值，以此类推去得到一个最终的结果
+            @Override
+            public Integer apply(@NonNull Integer sum, @NonNull Integer item) throws Exception {
+                return sum + item;
+            }
+        }).subscribe(new Observer<Integer>() {
+            @Override
+            public void onSubscribe(@NonNull Disposable disposable) {
+
+            }
+
+            @Override
+            public void onNext(@NonNull Integer integer) {
+                Log.d(TAG, integer + "");
+            }
+
+            @Override
+            public void onError(@NonNull Throwable throwable) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
     }
 
     private void buffer() {
