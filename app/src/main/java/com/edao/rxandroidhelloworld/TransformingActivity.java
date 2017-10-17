@@ -35,7 +35,38 @@ public class TransformingActivity extends AppCompatActivity {
 
 //        map();
 //        flatMap();
-        groupBy();
+//        groupBy();
+        buffer();
+    }
+
+    private void buffer() {
+        List<Student> students = new ArrayList<>();
+        students.add(new Student("张三", 12));
+        students.add(new Student("李四", 16));
+        students.add(new Student("王五", 15));
+
+        Observable.fromIterable(students).buffer(2).subscribe(new Observer<List<Student>>() {
+            @Override
+            public void onSubscribe(@NonNull Disposable disposable) {
+
+            }
+
+            //理解成分页请求，一次请求多少条数据；或是缓冲区之类的概念
+            @Override
+            public void onNext(@NonNull List<Student> students) {
+                Log.d(TAG, students.toString());
+            }
+
+            @Override
+            public void onError(@NonNull Throwable throwable) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
     }
 
     private void groupBy() {
@@ -48,9 +79,9 @@ public class TransformingActivity extends AppCompatActivity {
             @Override
             public Integer apply(@NonNull Student student) throws Exception {
                 //根据条件设定返回的不同的分组（这里是年龄大于15岁的分到组号为1，其余的组号为2）
-                if(student.age > 15){
+                if (student.age > 15) {
                     return 1;
-                }else {
+                } else {
                     return 2;
                 }
 
@@ -73,7 +104,7 @@ public class TransformingActivity extends AppCompatActivity {
                     @Override
                     public void onNext(@NonNull Student student) {
 
-                        Log.d(TAG, "组号为 "+ integerStudentGroupedObservable.getKey() + " 的成员有 " + student.name);
+                        Log.d(TAG, "组号为 " + integerStudentGroupedObservable.getKey() + " 的成员有 " + student.name);
                     }
 
                     @Override
