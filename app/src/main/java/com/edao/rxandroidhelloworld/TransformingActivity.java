@@ -182,6 +182,11 @@ public class TransformingActivity extends AppCompatActivity {
         students.add(new Student("王五", 10, lessons3));
 
         Observable.fromIterable(students).flatMap(new Function<Student, ObservableSource<Lesson>>() {
+
+            //flat有平的意思，就是把一些东西给摊开来看。可以从上一个map里进一步来看，我们用map来对数据进行修饰，
+            //这里也是修饰，我们这里需要罗列出来学生的课程，但它是位于列表里的列表
+            //所以把students通过flatmap给摊开，然后取出里面的lessons，把这些lessons合并在一起，我们一个个的拿出来看
+            //用原来的java来表述就是“循环嵌套循环”
             @Override
             public ObservableSource<Lesson> apply(@NonNull Student student) throws Exception {
                 return Observable.fromIterable(student.lessons);
@@ -210,7 +215,11 @@ public class TransformingActivity extends AppCompatActivity {
     }
 
     private void map() {
+
         Observable.just(123).map(new Function<Integer, String>() {
+
+            //一种数据的转换，即每一项数据通过map来达到一个修饰的结果，例如这里的Integer变成String
+            //或者给每句话加上一些特定标志之类的
             @Override
             public String apply(@NonNull Integer integer) throws Exception {
                 return integer + "";
